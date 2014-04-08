@@ -45,17 +45,20 @@ function TestLayer:update(diff)
             c = c+1
         end
 
-        if c == 16 then
+        if  c == 16 then
             self.state = 2
             self.word = ui.newBMFontLabel({text="You Fail", size=140, color={246, 4, 9}})
-            setAnchor(setPos(addChild(self.bg, self.word), {320, 960-594}), {0.5, 0.5})
+            self.word:runAction(sequence({fadein(0.1), moveto(0.3, 320, 960-594)}))
+            setAnchor(setPos(addChild(self.bg, self.word), {320, 0}), {0.5, 0.5})
             return
         end
         
-        if self.maxValue == 11 then
+        --1024 ---> 11 2048
+        if self.maxValue == 10 then
             self.state = 2
             self.word = ui.newBMFontLabel({text="You Win", size=150, color={246, 4, 9}})
-            setAnchor(setPos(addChild(self.bg, self.word), {320, 960-594}), {0.5, 0.5})
+            self.word:runAction(sequence({fadein(0.1), moveto(0.3, 320, 960-594)}))
+            setAnchor(setPos(addChild(self.bg, self.word), {320, 0}), {0.5, 0.5})
             return
         end
 
