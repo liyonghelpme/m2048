@@ -187,7 +187,7 @@ public class AdsAdmob implements InterfaceAds {
 				if (null == mWm) {
 					mWm = (WindowManager) mContext.getSystemService("window");
 				}
-				AdsWrapper.addAdView(mWm, adView, curPos);
+				AdsWrapper.addAdView(mWm, adView, 4);
 			}
 		});
 	}

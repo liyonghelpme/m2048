@@ -36,13 +36,20 @@ public class HelloLua extends Cocos2dxActivity{
 	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
+		PluginWrapper.init(this); // for plugins
 		PluginWrapper.setGLSurfaceView(Cocos2dxGLSurfaceView.getInstance());
+
 	}
 	
 	public Cocos2dxGLSurfaceView onCreateGLSurfaceView() {
 		return new LuaGLSurfaceView(this);
 	}
 	
+	@Override 
+	public Cocos2dxGLSurfaceView onCreateView() {
+		return new LuaGLSurfaceView(this);
+	}
+		
 	static {
         System.loadLibrary("hellolua");
    }
