@@ -87,6 +87,7 @@ function TestScene:ctor()
     self.temp:addChild(self.layer.bg)
 
     self:updateScore(0)
+    MyPlugins:getInstance():sendCmd("showAds", "")
 end
 function TestScene:updateScore(s)
     self.score = self.score+s
