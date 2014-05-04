@@ -105,6 +105,7 @@ function StandardTouchHandler:MoveBack(difx, dify)
     end
     self.targetMove = {self.targetMove[1]+difx, self.targetMove[2]+dify}
     local sz = self.bg:getContentSize() 
+    --print("consize", sz.width, sz.height)
     --要使用目标scale
     --local sca = self.bg:getScale()
     local sca = self.targetScale or self.bg:getScale()
@@ -196,6 +197,8 @@ function StandardTouchHandler:adjustMove()
 end
 
 function StandardTouchHandler:tMoved(touches)
+    
+    --print("tmove ed")
     ----print("tMoved", sim:encode(touches))
     local oldPos = copyTouchTable(self.touchValue)
     --local oldPos = self.lastPos
@@ -250,6 +253,7 @@ function StandardTouchHandler:tMoved(touches)
             local dify = self.touchValue[0][2]-oldPos[0][2]
             self.accMove = self.accMove+ math.abs(difx)+math.abs(dify)
             --if math.abs(difx)+math.abs(dify) < 200 then
+                --print("moveback", difx, dify)
                 self:MoveBack(difx, dify)
             --end
         end

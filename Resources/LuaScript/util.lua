@@ -484,6 +484,7 @@ function convertMultiToArr(touches)
     local count = 0
     --x y id
     for i, v in ipairs(touches) do
+        print("touchInfo", i, v)
         if (i-1) % 3 == 0 then
             x = v
         elseif (i-1) % 3 == 1 then
@@ -1065,7 +1066,8 @@ function setTexture(sp, tex)
     return sp
 end
 function linearInter(va, vb, ta, tb, cut)
-    return va+(vb-va)*cut/(tb-ta)
+    --print("lv", va, vb, ta, tb, cut)
+    return va+(vb-va)*(cut-ta)/(tb-ta)
 end
 function calAccCost(leftTime)
     for i = 1, i < #AccCost,  1 do
@@ -1295,6 +1297,20 @@ function getVS()
 end
 function setRotation(p, ang)
     p:setRotation(ang)
+    return p
+end
+
+function setRotationX(p, ang)
+    p:setRotationX(ang)
+    return p
+end
+
+function radToDeg(rad)
+    return rad*180/math.pi
+end
+
+function setRotationY(p, ang)
+    p:setRotationY(ang)
     return p
 end
 
