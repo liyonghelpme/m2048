@@ -36,8 +36,9 @@ local function main()
     --require 'Miao.FightScene'
     --require 'myMap.FightMap'
     --require "Miao.TestSea"
-    require "TestScene"
-
+    --require "TestScene"
+    --require "ThreeScene"
+    require "FightScene"
     local director = CCDirector:sharedDirector()
 
     --[[
@@ -45,7 +46,8 @@ local function main()
     director:replaceScene(sc.bg)
     global.director:onlyRun(sc)
     --]]
-    local sc = TestScene.new()
+    --local sc = TestScene.new()
+    local sc = FightScene.new()
     --director:runWithScene(sc.bg)
     --global.director:onlyRun(sc)
     global.director:runWithScene(sc)
