@@ -199,6 +199,7 @@ function ui.newButton(params)
     local lay = CCLayer:create()
     local sprOr9 = params.spr or true
     local sp
+    local sca = params.sca or 1
     if sprOr9 then
         sp = CCSprite:create(params.image)
     else
@@ -206,6 +207,7 @@ function ui.newButton(params)
     end
     lay:addChild(sp)
     --lay:ignoreAnchorPointForPosition(true)
+    setScale(lay, sca)
     obj.bg = lay
     local sz = sp:getContentSize()
     lay:setContentSize(sz)
@@ -227,6 +229,10 @@ function ui.newButton(params)
     local spSize = {sz.width, sz.height}
 
 
+    function obj:setScale(s)
+        sca = s
+        setScale(obj.bg, sca)
+    end
     function obj:touchBegan(x, y)
         local p = sp:convertToNodeSpace(ccp(x, y))
         local ret = checkIn(p.x, p.y, sz)
@@ -237,7 +243,7 @@ function ui.newButton(params)
             self.scaX = scaX
             self.scaY = scaY
             if needScale then
-                setScaleY(setScaleX(lay, 0.8), 0.8)
+               setScale(lay, sca*0.8)
             end
             if touchColor ~= nil then
                 setColor(obj.text, touchColor)
@@ -266,7 +272,7 @@ function ui.newButton(params)
     end
     function obj:touchEnded(x, y)
         if needScale then
-            setScaleY(setScaleX(lay, 1), 1)
+            setScale(lay, sca*1)
         end
         if touchColor ~= nil then
             setColor(obj.text, col)
