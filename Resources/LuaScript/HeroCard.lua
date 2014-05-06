@@ -18,9 +18,26 @@ function HeroCard:ctor(s)
     local sp = setPos(addChild(self.but.bg, createSprite("heart.png")), {20, 82})
     table.insert(self.hearts, sp)
 
-    self.skillEnable = false
 end
+
 function HeroCard:onBut()
+    if self.scene.state == FIGHT_STATE.MON_ATTACK then
+        if self.health > 0 then
+            for i=1, 6, 1 do
+                local m = self.scene.monsters[i]
+                if m.attackable then
+                    self:getHurt(1)
+                    m.attackable = false
+                    self.scene:checkAllMon()
+                    break
+                end
+            end
+        end
+    end
+end
+function HeroCard:getHurt(n)
+    self.hearts[self.health]:runAction(fadeout(0.2))
+    self.health = self.health-n
 end
 
 function HeroCard:enableSkill(s)
@@ -29,3 +46,8 @@ end
 function HeroCard:disableSkill()
     self.skill:disable()
 end
+
+function HeroCard:resetState()
+    self.skill:resetState() 
+end
+

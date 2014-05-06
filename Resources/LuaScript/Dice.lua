@@ -9,6 +9,7 @@ function Dice:ctor(s)
     
     self.visible = true
     self.sel = false
+    self.useYet = false
     self.ani = createAnimation("roll", "d%d.png", 1, 6, 1, 0.3, false)
 end
 
@@ -32,9 +33,9 @@ function Dice:onDice()
         self.sel = not self.sel
         self.scene:checkDice()
         if self.sel then
-            setColor(self.but.sp, {255, 255, 255})
+            setColor(self.dice.sp, {255, 255, 255})
         else
-            setColor(self.but.sp, {128, 128, 128})
+            setColor(self.dice.sp, {128, 128, 128})
         end
     end
 
@@ -42,3 +43,19 @@ end
 function Dice:setHide()
     setColor(self.dice.sp, {128, 128, 128})
 end
+
+--when touch skill then dice hide
+function Dice:useDice()
+    if self.sel then
+        self.useYet = true
+        setVisible(self.bg, false)
+    end
+end
+function Dice:resetState()
+    setVisible(self.bg, true)
+    self.visible = true
+    self.sel = false
+    self.useYet = false
+    setColor(self.dice.sp, {255, 255, 255})
+end
+

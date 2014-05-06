@@ -1874,3 +1874,11 @@ function getOrder(v)
     return ord
 end
 
+function worldSpace(bg, p)
+    local pos = bg:convertToWorldSpace(ccp(p[1], p[2]))
+    return {pos.x, pos.y}
+end
+function nodeSpace(bg, p)
+    local pos = bg:convertToNodeSpace(ccp(p[1], p[2]))
+    return {pos.x, pos.y}
+end
