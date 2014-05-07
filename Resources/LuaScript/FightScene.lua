@@ -23,12 +23,25 @@ end
 
 FightLayer = class()
 function FightLayer:ctor()
-    math.randomseed(0)
+    --math.randomseed(0)
+    setSeed(2);
+    local count = {}
+    for i=1, 6, 1 do
+        count[i] = 0
+    end
+    for i=1, 100, 1 do
+        local rd =  myRand(1, 6)
+        count[rd] = count[rd]+1
+    end
+    print("res ", simple.encode(count))
+
     self.state = 0
     self.selSkill = nil
     self.attMon = nil
 
     self.bg = CCLayer:create()
+    local lc = CCLayerColor:create(ccc4(255, 0, 0, 255)) 
+    addChild(self.bg, lc)
     local sz = {width=1024, height=768}
     self.temp = addNode(self.bg)
     centerTemp(self.temp)
@@ -36,9 +49,19 @@ function FightLayer:ctor()
     self.sNum = ui.newTTFLabel({text="0", size=50})
     setPos(addChild(self.bg, self.sNum, 5), {100, 100})
 
-    local h = HeroCard.new(self)
+
+    self.heroes = {}
+    local h = HeroCard.new(self, 0)
     setPos(addChild(self.temp, h.bg), {176, fixY(sz.height, 622)})
-    self.hero = h
+    table.insert(self.heroes, h)
+
+    local h = HeroCard.new(self, 1)
+    setPos(addChild(self.temp, h.bg), {176+210, fixY(sz.height, 622)})
+    table.insert(self.heroes, h)
+    
+
+    
+    --self.hero = h
 
     local dpos = {
         {144, fixY(sz.height, 382)},
@@ -95,7 +118,8 @@ function FightLayer:onRoll()
             for i=1, 6, 1 do
                 local d = self.dices[i]
                 if d.visible then
-                    local rd = math.random(1, 6)
+                    --local rd = math.random(1, 6)
+                    local rd = myRand(1, 6)
                     d:setRoll(rd)
                     print("rd", rd)
                 end
@@ -170,9 +194,20 @@ function FightLayer:resetState()
     for k, v in ipairs(self.dices) do
         v:resetState()
     end
-    self.hero:resetState()
+
+    for k, h in ipairs(self.heroes) do
+        h:resetState()
+    end
     
-    if self.hero.health == 0 then
+    local dh = true
+    for k, v in ipairs(self.heroes) do
+        if v.health > 0 then
+            dh = false
+            break
+        end
+    end
+
+    if dh then
         self:gameOver()
     else
         self:checkMonDead()
@@ -206,7 +241,7 @@ end
 
 --for each skill check Enable 
 function FightLayer:checkDice()
-    self.hero:disableSkill()
+    --self.hero:disableSkill()
     
     self.hero:checkSkill()
     
@@ -247,6 +282,10 @@ end
 function FightLayer:finAttack()
     self.selSkill = nil
     self.state = 3
-    self.attMon:getHurt(1)
+    --self.attMon:getHurt(1)
+    --self.attMon = nil
+end
+
+function FightLayer:clearAttackState()
     self.attMon = nil
 end

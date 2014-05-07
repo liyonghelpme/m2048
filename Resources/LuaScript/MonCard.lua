@@ -27,8 +27,12 @@ function MonCard:onBut()
 end
 
 function MonCard:getHurt(n)
-    self.health = self.health-n
-    self.hearts[1]:runAction(fadeout(0.3))
+    while self.health > 0 and n > 0 do
+        self.hearts[self.health]:runAction(fadeout(0.3))
+        self.health = self.health-1
+        n = n-1
+    end
+
     if self.health == 0 then
         setColor(self.but.sp, {128, 128, 128})
     end
@@ -36,7 +40,8 @@ end
 
 function MonCard:throwDice()
     if self.health > 0 then
-        local rd = math.random(1, 6)
+        --local rd = math.random(1, 6)
+        local rd = myRand(1, 6)
         self.value = rd
         local ani = getAnimation("roll") 
         local function setV()

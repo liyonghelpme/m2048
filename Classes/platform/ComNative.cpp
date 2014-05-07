@@ -46,8 +46,15 @@ void setSeed(int s) {
     seed = (unsigned int)s;
 }
 int myRand(int a, int b)  {
-    unsigned int v = ((seed*1103515245)+12345)&0x7fffffff;
-    unsigned int res = v*((unsigned int)b-(unsigned int)a)/0x7fffffff+a;
-    return res;
+    unsigned int v = ((seed*1103515245)+12345)&0x7ffffffe;
+    seed = v;
+    float fr = (float)v/0x7fffffff;
+    //CCLog("a b %d %d %d %d %f", a, b, v, 0x7fffffff, fr);
+    int o = fr*(b-a+1)+a;
+    //CCLog("res %d", o);
+    return o;
+
+    //unsigned int res = v*((unsigned int)b-(unsigned int)a+1)/0x7fffffff+a;
+    //return res;
 }
 

@@ -1,12 +1,20 @@
 require "Skill"
+--初始化
 HeroCard = class()
-function HeroCard:ctor(s)
+function HeroCard:ctor(s, id)
     self.scene = s
+    self.id = id
     self.bg = CCNode:create()
     self.but = ui.newButton({image="cardBack.png", delegate=self, callback=self.onBut})
     addChild(self.bg, self.but.bg)
 
-    self.skill = Skill.new(self)
+    if self.id == 0 then
+        self.skill = Skill.new(self, 0)
+    else
+        self.skill = Skill.new(self, 1)
+    end
+
+
     addChild(self.but.bg, self.skill.bg)
 
     --self.skill = ui.newButton({image="skillBack.png", delegate=self, callback=self.onSkill})
@@ -46,9 +54,14 @@ function HeroCard:enableSkill(s)
 end
 --]]
 
+
+--[[
 function HeroCard:disableSkill()
     self.skill:disable()
 end
+--]]
+
+
 
 function HeroCard:resetState()
     self.skill:resetState() 
