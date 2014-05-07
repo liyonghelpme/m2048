@@ -41,3 +41,13 @@ void enableShadow(CCLabelTTF *lab, CCSize sz, float so, float sb, bool up, int r
 void setFontFillColor(CCLabelTTF *lab, ccColor3B c, bool u) {
     lab->setFontFillColor(c, u);
 }
+static unsigned int seed = 0;
+void setSeed(int s) {
+    seed = (unsigned int)s;
+}
+int myRand(int a, int b)  {
+    unsigned int v = ((seed*1103515245)+12345)&0x7fffffff;
+    unsigned int res = v*((unsigned int)b-(unsigned int)a)/0x7fffffff+a;
+    return res;
+}
+

@@ -91,11 +91,13 @@ function FightLayer:onRoll()
     if self.state == 0 or self.state == 1 or self.state == 2 then
         if not self.inRoll then
             self.inRoll = true
+            print("roll result")
             for i=1, 6, 1 do
                 local d = self.dices[i]
                 if d.visible then
                     local rd = math.random(1, 6)
                     d:setRoll(rd)
+                    print("rd", rd)
                 end
             end
 
@@ -202,8 +204,13 @@ function FightLayer:update(diff)
     self.sNum:setString(self.state)
 end
 
+--for each skill check Enable 
 function FightLayer:checkDice()
     self.hero:disableSkill()
+    
+    self.hero:checkSkill()
+    
+    --[[
     for i=1,6,1 do
         local d = self.dices[i]
         if d.value == 6 and d.sel then
@@ -212,15 +219,21 @@ function FightLayer:checkDice()
             end
         end
     end
+    --]]
+
 end
+
 function FightLayer:goSelTarget(ss)
     self.state = 4
     self.selSkill = ss
+    
+    --use certain dice
     for i=1, 6, 1 do
         self.dices[i]:useDice()
     end
 end
 
+--when select target 
 function FightLayer:attackMon(m)
     if self.selSkill ~= nil and self.attMon == nil then
         self.attMon = m
@@ -230,7 +243,7 @@ end
 
 --reselect new skill
 --select two six
---don't repeat select skill 
+--don't repeat select skil
 function FightLayer:finAttack()
     self.selSkill = nil
     self.state = 3

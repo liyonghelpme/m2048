@@ -10,6 +10,58 @@
 using namespace cocos2d;
 using namespace cocos2d::extension;
 
+#ifndef TOLUA_DISABLE_tolua_Cocos2d_setSeed00
+static int tolua_Cocos2d_setSeed00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+	tolua_Error tolua_err;
+	if (
+		!tolua_isnumber(tolua_S,1,0,&tolua_err) ||
+		!tolua_isnoobj(tolua_S,2,&tolua_err)
+	)
+	 goto tolua_lerror;
+	else
+#endif
+	{
+        int seed = (int)tolua_tonumber(tolua_S, 1, 0);
+        setSeed(seed);
+	}
+	return 0;
+#ifndef TOLUA_RELEASE
+     tolua_lerror:
+     tolua_error(tolua_S,"#ferror in function 'setSeed'", &tolua_err);
+     return 0;
+#endif
+}
+#endif
+
+#ifndef TOLUA_DISABLE_tolua_Cocos2d_myRand00
+static int tolua_Cocos2d_myRand00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+	tolua_Error tolua_err;
+	if (
+		!tolua_isnumber(tolua_S,1,0,&tolua_err) ||
+		!tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+		!tolua_isnoobj(tolua_S,3,&tolua_err)
+	)
+	 goto tolua_lerror;
+	else
+#endif
+	{
+        int a = (int)tolua_tonumber(tolua_S, 1, 0);
+        int b = (int)tolua_tonumber(tolua_S, 2, 0);
+        int v = myRand(a, b);
+        tolua_pushnumber(tolua_S, v);
+	}
+	return 1;
+#ifndef TOLUA_RELEASE
+     tolua_lerror:
+     tolua_error(tolua_S,"#ferror in function 'myRand'", &tolua_err);
+     return 0;
+#endif
+}
+#endif
 
 
 #ifndef TOLUA_DISABLE_tolua_Cocos2d_setScriptTouchPriority00
@@ -118,6 +170,8 @@ TOLUA_API int tolua_ext_reg_types(lua_State* tolua_S)
 TOLUA_API int tolua_ext_reg_modules(lua_State* tolua_S)
 {
   tolua_function(tolua_S,"setScriptTouchPriority", tolua_Cocos2d_setScriptTouchPriority00);
+  tolua_function(tolua_S,"setSeed", tolua_Cocos2d_setSeed00);
+  tolua_function(tolua_S,"myRand", tolua_Cocos2d_myRand00);
 
   tolua_cclass(tolua_S,"MyPlugins","MyPlugins","",NULL);
   tolua_beginmodule(tolua_S,"MyPlugins");

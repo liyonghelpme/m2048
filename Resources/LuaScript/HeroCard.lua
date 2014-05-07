@@ -40,9 +40,12 @@ function HeroCard:getHurt(n)
     self.health = self.health-n
 end
 
+--[[
 function HeroCard:enableSkill(s)
     self.skill:setEnable()
 end
+--]]
+
 function HeroCard:disableSkill()
     self.skill:disable()
 end
@@ -51,3 +54,8 @@ function HeroCard:resetState()
     self.skill:resetState() 
 end
 
+function HeroCard:checkSkill()
+    if self.health > 0 then
+        self.skill:checkEnable()
+    end
+end
