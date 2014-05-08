@@ -1884,3 +1884,8 @@ function nodeSpace(bg, p)
 end
 
 
+function toNodeSpace(p, n)
+    return nodeSpace(p, worldSpace(n:getParent(), getPos(n)))
+end
+
+

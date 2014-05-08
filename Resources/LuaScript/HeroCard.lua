@@ -66,9 +66,10 @@ function HeroCard:onBut()
         if self.health > 0 then
             for i=1, 6, 1 do
                 local m = self.scene.monsters[i]
-                if m.attackable then
+                if m:checkAttackable() then
+                    m:doAttack(self)
                     self:getHurt(1)
-                    m.attackable = false
+                    --m.attackable = false
                     self.scene:checkAllMon()
                     break
                 end
@@ -137,3 +138,5 @@ function HeroCard:getHeal(n)
     --]]
 end
 
+function HeroCard:checkSkillPossible()
+end

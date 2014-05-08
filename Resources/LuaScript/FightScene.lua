@@ -142,9 +142,14 @@ function FightLayer:onRoll()
                 else
                     self.rollBut.text:setString("FINISH ROLL")
                 end
-                self.state = self.state+1
 
-                if self.state == 3 then
+                self.state = self.state+1
+                --扔完色子决定
+                for k, v in ipairs(self.heroes) do
+                    v:checkSkillPossible()
+                end
+
+                if self.state == FIGHT_STATE.SEL_DICE then
                     for i=1, 6, 1 do
                         self.dices[i]:setHide()
                     end
@@ -175,10 +180,16 @@ function FightLayer:checkAllMon()
     if self.state ~= FIGHT_STATE.ROLL_ONE then
         local atk = false
         for k, v in ipairs(self.monsters) do
+            if v:checkAttackable() then
+                atk = true
+                break
+            end
+            --[[
             if v.attackable then
                 atk = true
                 break
             end
+            --]]
         end
         if not atk then
             self:resetState()     
