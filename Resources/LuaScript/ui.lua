@@ -9,6 +9,9 @@ function ui.newEditBox(params)
     local x = params.x
     local y = params.y
     local size = params.size
+    local text = params.text
+    local initFunc = params.initFunc
+
     local delegate = params.delegate
     if type(size) == "table" then
         size = CCSizeMake(size[1], size[2])
@@ -19,12 +22,23 @@ function ui.newEditBox(params)
     end
     if type(imagePressed) == "string" then
         imagePressed = display.newScale9Sprite(imagePressed)
+    elseif imagePressed == nil then
+        imagePressed = imageNormal
     end
     if type(imageDisabled) == "string" then
         imageDisabled = display.newScale9Sprite(imageDisabled)
+    elseif imageDisabled == nil then
+        imageDisabled = imageNormal
     end
 
+    print("before create")
     local editbox = CCEditBox:create(size, imageNormal, imagePressed, imageDisabled)
+    print("create editbox")
+    if text ~= nil then
+        local lab = setPos(setAnchor(ui.newTTFLabel({text=text}), {1, 0.5}), {-10, 0})
+        editbox:addChild(lab)
+        editbox.text = text
+    end
 
     if editbox then
         editbox:registerScriptEditBoxHandler(function(event, object)
@@ -50,6 +64,9 @@ function ui.newEditBox(params)
         if x and y then editbox:setPosition(x, y) end
     end
     editbox:setTouchPriority(kCCMenuHandlerPriority)
+    if initFunc then
+        initFunc(editbox)
+    end
 
     return editbox
 end

@@ -62,6 +62,7 @@ bool AppDelegate::applicationDidFinishLaunching()
     CCLog("save Path is %s", s);
 	CCFileUtils::sharedFileUtils()->addSearchPath(s);
     CCFileUtils::sharedFileUtils()->addSearchPath("LuaScript");
+    CCFileUtils::sharedFileUtils()->addSearchPath("image");
 
     
 	//UpdateScene 中更新脚本
