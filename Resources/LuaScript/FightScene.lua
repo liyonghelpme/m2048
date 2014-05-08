@@ -59,9 +59,13 @@ function FightLayer:ctor()
     setPos(addChild(self.temp, h.bg), {176+210, fixY(sz.height, 622)})
     table.insert(self.heroes, h)
     
+    local h = HeroCard.new(self, 2)
+    setPos(addChild(self.temp, h.bg), {176+210*2, fixY(sz.height, 622)})
+    table.insert(self.heroes, h)
 
-    
-    --self.hero = h
+    local h = HeroCard.new(self, 3)
+    setPos(addChild(self.temp, h.bg), {176+210*3, fixY(sz.height, 622)})
+    table.insert(self.heroes, h)
 
     local dpos = {
         {144, fixY(sz.height, 382)},
@@ -98,9 +102,13 @@ function FightLayer:ctor()
         {460, fixY(sz.height, 87)}, 
         {460, fixY(sz.height, 229)},
     }
+    --根据关卡决定 怪兽类型和 剩余的生命值数量
     self.monsters = {}
-    for i=1, 5, 1 do
-        local m = MonCard.new(self)
+    local m = MonCard.new(self, 0, 2)
+    setPos(addChild(self.temp, m.bg), mpos[1])
+    table.insert(self.monsters, m)
+    for i=2, 5, 1 do
+        local m = MonCard.new(self, 1, 1)
         setPos(addChild(self.temp, m.bg), mpos[i])
         table.insert(self.monsters, m)
     end
@@ -220,16 +228,18 @@ function FightLayer:gameOver()
     end
 end
 function FightLayer:checkMonDead()
-    local md = true
-    for k, v in ipairs(self.monsters) do
-        if v.health > 0 then
-            md = false
-            break
+    if self.state ~= FIGHT_STATE.GAME_OVER then
+        local md = true
+        for k, v in ipairs(self.monsters) do
+            if v.health > 0 then
+                md = false
+                break
+            end
         end
-    end
-    if md then
-        self.state = FIGHT_STATE.GAME_OVER
-        addBanner("Game Over")
+        if md then
+            self.state = FIGHT_STATE.GAME_OVER
+            addBanner("Game Over")
+        end
     end
 end
 
@@ -242,8 +252,11 @@ end
 --for each skill check Enable 
 function FightLayer:checkDice()
     --self.hero:disableSkill()
-    
-    self.hero:checkSkill()
+    --self.hero:checkSkill()
+
+    for k, v in ipairs(self.heroes) do
+        v:checkSkill()
+    end
     
     --[[
     for i=1,6,1 do
@@ -271,8 +284,11 @@ end
 --when select target 
 function FightLayer:attackMon(m)
     if self.selSkill ~= nil and self.attMon == nil then
-        self.attMon = m
-        self.selSkill:attackMon(m) 
+        --攻击敌人 还是 治愈我方
+        if self.selSkill:checkAttackMon(m) then
+            self.attMon = m
+            self.selSkill:attackMon(m) 
+        end
     end
 end
 
@@ -286,6 +302,8 @@ function FightLayer:finAttack()
     --self.attMon = nil
 end
 
+--check if all Mon dead
 function FightLayer:clearAttackState()
     self.attMon = nil
+    self:checkMonDead()
 end

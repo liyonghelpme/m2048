@@ -47,6 +47,7 @@ end
 --when touch skill then dice hide
 function Dice:useDice()
     if self.sel then
+        self.sel = false
         self.useYet = true
         setVisible(self.bg, false)
     end

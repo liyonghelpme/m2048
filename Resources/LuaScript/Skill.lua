@@ -1,9 +1,14 @@
+require "SkillUtil"
 require "FuncSkill"
 require "RushSkill"
 require "StrikeSkill"
+require "RaySkill"
+require "HealSkill"
+require "SilentSkill"
+require "IceSkill"
 
 Skill = class()
-function Skill:ctor(h, id)
+function Skill:ctor(h, id, pos)
     self.hero = h
     --Rush Skill
     self.id = id
@@ -12,6 +17,14 @@ function Skill:ctor(h, id)
         self.func = RushSkill.new(self)
     elseif self.id == 1 then
         self.func = StrikeSkill.new(self)
+    elseif self.id == 2 then
+        self.func = RaySkill.new(self)
+    elseif self.id == 3 then
+        self.func = HealSkill.new(self)
+    elseif self.id == 4 then
+        self.func = SilentSkill.new(self)
+    elseif self.id == 5 then
+        self.func = IceSkill.new(self)
     end
 
     self.bg = CCNode:create()
@@ -32,8 +45,7 @@ function Skill:onSkill()
     if self.enable and self.hero.scene.state == 3 and not self.selYet then
         self.selYet = true
         self.hero.scene:goSelTarget(self)
-
-
+        setColor(self.but.sp, {128, 128, 128})
         self.func:showAttack()
         --[[
         self.swords = {}
@@ -124,6 +136,9 @@ function Skill:checkEnable()
         self:disable() 
     end
     --]]
+end
+function Skill:checkAttackMon(m)
+    return self.func:checkAttackMon(m)
 end
 
 
