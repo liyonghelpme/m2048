@@ -14,8 +14,8 @@ require "Global.User"
 require "model.HttpController"
 require "Global.GlobalController"
 
-require "views.ShadowWords"
+--require "views.ShadowWords"
 
-require "views.MoveMap"
+--require "views.MoveMap"
 require "views.StandardTouchHandler"
 require "views.DialogController"
