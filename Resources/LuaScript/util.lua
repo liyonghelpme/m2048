@@ -36,6 +36,7 @@ function registerMultiTouch(obj)
 end
 function registerTouch(obj, pri)
     local function onTouch(eventType, x, y)
+        --print("onTouch", eventType, x, y)
         if eventType == "began" then   
             return obj:touchBegan(x, y)
         elseif eventType == "moved" then

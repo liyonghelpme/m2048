@@ -193,7 +193,7 @@ end
 --image
 --conSize button size
 
---{image=, conSize={}, delegate=self, callback=self.}
+--{image=, conSize={}, delegate=self, callback=self.xxx, param=?}
 function ui.newButton(params)
     local obj = {}
     local lay = CCLayer:create()
@@ -264,6 +264,11 @@ function ui.newButton(params)
     end
     function obj:touchMoved(x, y)
     end
+    
+    function obj:setParam(p)
+        params.param = p
+    end
+
     function obj:touchEnded(x, y)
         if needScale then
             setScaleY(setScaleX(lay, 1), 1)

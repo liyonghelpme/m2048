@@ -16,6 +16,7 @@ EVENT_TYPE = {
 
     PAUSE_GAME=24,
     CONTINUE_GAME=25,
+
 }
 Event = {}
 Event.callbacks = {}
