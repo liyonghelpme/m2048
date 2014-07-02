@@ -1,4 +1,5 @@
 require "Demo.Soldier"
+require "Demo.CureSoldier"
 
 local function updateItem(self, diff)
     self.curTime = self.curTime+diff
@@ -25,12 +26,22 @@ end
 
 
 BattleMenu = class()
+
+function BattleMenu:onResume()
+    global.director:replaceScene(BattleScene.new())
+end
+
 function BattleMenu:ctor(sc)
     self.scene = sc
+
 
     local vs = getVS()
     
     self.bg = CCLayer:create()
+
+    local but = ui.newButton({text="重新开始", size=50, color={0, 0, 0}, image="round.png", delegate=self, callback=self.onResume})
+    setPos(addChild(self.bg, but.bg), {50, 150})
+
     local it1 = createItem(self, 1)
     local it2 = createItem(self, 2)
     setPos(it2.bg, {84+94, 65})
@@ -78,6 +89,13 @@ function BattleMenu:receiveMsg(eve, arg)
             rate = math.min(math.max(rate, 0), 1)
             self.blood2:setTextureRect(CCRectMake(128*(1-rate), 0, 128*rate, 24))
         end
+    elseif eve == "HERO_DEAD" then
+        if arg.color == 0 then
+        else
+            local lab = ui.newTTFLabel({text="你获胜了!", size=50, color={216, 219, 2}})
+            local vs = getVS()
+            setPos(addChild(self.bg, lab), {vs.width/2, vs.height/2})
+        end
     end
 end
 
@@ -103,13 +121,20 @@ function BattleMenu:onBut(p)
     if item.curTime >= item.totalTime and #self.myteamList >= p then
         local hid = self.myteamList[p]
         table.remove(self.myteamList, p)
-        local body = Soldier.new(self.scene, hid, 0)             
-        addChild(self.bg, body.bg)
+        local body
+        if hid == 4 then
+            body = CureSoldier.new(self.scene, hid, 0)             
+        else
+            body = Soldier.new(self.scene, hid, 0)             
+        end
+        addChild(self.scene.bg, body.bg)
         local vs = getVS()
         local mh = vs.height/2
         
         if self.lastId == 0 then
             setPos(body.bg, {130, mh-50})
+        elseif self.lastId == 1 then
+            setPos(body.bg, {130, mh})
         else
             setPos(body.bg, {130, mh+50})
         end
@@ -117,7 +142,7 @@ function BattleMenu:onBut(p)
         item.curTime = 0
 
         self.lastId = self.lastId+1
-        self.lastId = self.lastId%2
+        self.lastId = self.lastId%3
         
         --according to left soldier number adjust button state
         --[[

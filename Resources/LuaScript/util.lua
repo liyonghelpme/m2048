@@ -355,6 +355,8 @@ function bezierby(t, x0, y0, x1, y1, x2, y2, x3, y3)
     local b = purebezierby(t, x1, y1, x2, y2, x3, y3)
     return sequence({moveto(0, x0, y0), b})
 end
+--bezier 插值4 点
+--当前坐标  x1 x2 x3 4点
 function purebezierto(t, x1, y1, x2, y2, x3, y3)
     local bezier = ccBezierConfig()
     bezier.controlPoint_1 = ccp(x1, y1)

@@ -1,4 +1,3 @@
---
 
 local DIFY = 40
 local DIFX = 40
@@ -51,10 +50,11 @@ local function findEnemy(self, enemy)
     local dist = 99999
     local myPos = getPos(self.bg)
     local minEne
+    self.oldTarget = self.target
     for k, v in ipairs(enemy) do
         local enePos = getPos(v.bg)
         local ed = math.abs(enePos[1]-myPos[1])
-        if ed < dist then
+        if ed < dist and not v.dead then
             dist = ed
             minEne = v
         end
@@ -92,11 +92,89 @@ local function moveToTarget(self)
     end
 end
 
+local function moveForWhile(self)
+    if self.oldTarget ~= self.target then
+        self.changeDirNode:getAnimation():play("run", -1, -1, 1)
+    end
+     
+    local frameCount = 0
+    while frameCount < 10 do
+        if self.health <= 0 then
+            break
+        end
+        --print("start Move")
+        local myPos = getPos(self.bg)
+        local enePos = getPos(self.target.bg)
+        local dir = enePos[1]-myPos[1]
+        self.dir = getSign(dir)
+
+        local dist = math.abs(dir)
+        local sign = getSign(dir) 
+        if dist < self.attackRange then
+            break
+        else
+            --after move then adjust Y pos
+            local mv = self.diff*MOVE_SPEED*sign
+            self.moveX = mv
+            setPos(self.bg, {myPos[1]+mv, myPos[2]})
+            --print('start adjust')
+            --bug: lua
+            --当local 函数声明在 这个函数 之后的时候 无法调用 adjustPos 这个函数
+            --adjustYPos(self)
+            --adjustXPos(self)
+        end
+        coroutine.yield()
+        frameCount = frameCount+1
+    end
+end
+
+local function tryToAttack(self)
+    local myPos = getPos(self.bg)
+    local enePos = getPos(self.target.bg)
+    local dist = enePos[1]-myPos[1]
+    if math.abs(dist) < self.attackRange then
+        while true do
+            if self.health <= 0 then
+                break
+            end
+
+            if self.target.dead then
+                break
+            end
+
+            self.attackOver = false
+            --print("attack again")
+            self.changeDirNode:getAnimation():play("attack")
+            while true do
+                if self.attackOver then
+                    --print("soldier attack over")
+                    break
+                end
+                coroutine.yield()
+            end
+            --print("play wait animation")
+            
+            --self.changeDirNode:getAnimation():play("wait")
+            self.target:doHarm(self.attack)
+            --当用户点击屏幕 则开始移动一下
+            
+            local minDist = math.abs(getPos(self.target.bg)[1]-getPos(self.bg)[1])
+            if minDist > self.attackRange then
+                self.changeDirNode:getAnimation():play("wait", -1, -1, 1)
+                break
+            end
+            coroutine.yield()
+        end
+    end
+end
+
+
+
 local function doMove(self, dir)
     local vs = getVS()
 
     local myPos = getPos(self.bg)
-    local mv = dir*self.diff*MOVE_SPEED
+    local mv = dir*self.diff*100
     if dir < 0 then
         setScaleX(self.bg, -1)
         if myPos[1] > 30 then
@@ -143,86 +221,19 @@ local function runForWhile(self)
     self.inMove = false
 end
 
+local function handleDead(self)
+    if self.dead then
+        return
+    end
 
-local function heroMove(self)
-    --等待足够靠近了 
-    while true do
-        if self.target ~= nil then
-            local minDist = math.abs(getPos(self.target.bg)[1]-getPos(self.bg)[1])
-            local inTouch = self.scene.inTouch and self.color == 0
-            if not inTouch and minDist < self.attackRange  then
-                break
-            else
-                runForWhile(self)
-                --[[
-                --做小移动
-                if self.scene.inTouch == true and self.color == 0 then
-                    if self.scene.touchPos[1] < vs.width/2 then
-                        doMove(self, -1)
-                    else
-                        doMove(self, 1)
-                    end
-                end
-                --]]
-            end
-        end
-        coroutine.yield()
+    if self.health <= 0 then
+        self.dead = true
+        self.changeDirNode:getAnimation():play("death")
     end
 end
 
-local function setDir(self)
-    local myPos = getPos(self.bg)
-    local tarPos = getPos(self.target.bg)
-    if tarPos[1] > myPos[1] then
-        setScaleX(self.bg, 1)
-    else
-        setScaleX(self.bg, -1)
-    end
-end
-
-local function heroAttack(self)
-    while true do
-        setDir(self)
-
-        self.attackOver = false
-
-        --print("attack again")
-        self.changeDirNode:getAnimation():play("attack")
-        while true do
-            if self.scene.inTouch then
-                break
-            end
-            if self.attackOver then
-                --print("soldier attack over")
-                break
-            end
-            coroutine.yield()
-        end
-        --print("play wait animation")
-        
-        if self.scene.inTouch then
-            self.changeDirNode:getAnimation():play("wait", -1, -1, 1)
-            break
-        end
-            --self.changeDirNode:getAnimation():play("wait")
-        self.target:doHarm()
-        --当用户点击屏幕 则开始移动一下
-        
-        local minDist = math.abs(getPos(self.target.bg)[1]-getPos(self.bg)[1])
-        if minDist > self.attackRange then
-            self.changeDirNode:getAnimation():play("wait", -1, -1, 1)
-            break
-        end
-        if self.color == 0 and self.scene.inTouch then
-            --finish = true
-            self.changeDirNode:getAnimation():play("wait", -1, -1, 1)
-            break
-        end
-        coroutine.yield()
-    end
-end
-
-
+--发现我方士兵 逐渐移动靠近 
+--再发现 如果足够靠近了则攻击
 local function findTargetAndAttack(self)
     local vs = getVS()
 
@@ -238,18 +249,15 @@ local function findTargetAndAttack(self)
     while true do
         --local finish = false
         if #enemy > 0 then
-            findEnemy(self, enemy)
-            heroMove(self)
-            heroAttack(self)
-
-            --moveToTarget(self)
-            --[[
-            if finish then
-                finish = false
-                print("refind enemy")
-                --break
+            handleDead(self)
+            if self.dead then
+                Event:sendMsg("HERO_DEAD", self)
+                break
             end
-            --]]
+
+            findEnemy(self, enemy)
+            moveForWhile(self)
+            tryToAttack(self)
         end
 
         coroutine.yield()
@@ -258,12 +266,13 @@ local function findTargetAndAttack(self)
 end
 
 
-Hero = class()
+EnemyHero = class()
 --color 0 我方 1 敌方
-function Hero:ctor(s, col)
-    self.color = col
+function EnemyHero:ctor(s, col)
+    self.color = 1
     self.scene = s
     self.attackRange = 70
+    self.attack = 20
 
     self.name = math.random()
 
@@ -330,7 +339,7 @@ function Hero:ctor(s, col)
 
 end
 
-function Hero:update(diff)
+function EnemyHero:update(diff)
     self.diff = diff
     if self.scene.state == 1 and self.ok then
         local res, err = coroutine.resume(self.attackProcess, self)  
@@ -341,11 +350,11 @@ function Hero:update(diff)
     end
 end
 
-function Hero:onAttackOver()
+function EnemyHero:onAttackOver()
     self.attackOver = true
 end
 
-function Hero:doHarm()
+function EnemyHero:doHarm()
     local lab = ui.newTTFLabel({text='5', size=30, color={154, 12, 12}})
     setPos(addChild(self.bg, lab), {0, 50})
     lab:runAction(sequence({fadein(0.2), fadeout(0.2), callfunc(nil, removeSelf, lab)}))
@@ -355,8 +364,6 @@ function Hero:doHarm()
     Event:sendMsg("HERO_DAMAGE", self)
 end
 
-function Hero:doCure()
-    self.health = self.health+5
-    Event:sendMsg("HERO_DAMAGE", self)
+function EnemyHero:doCure()
 end
 

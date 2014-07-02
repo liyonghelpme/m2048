@@ -1,6 +1,9 @@
 require "Demo.BattleMenu"
 require "Demo.Hero2"
 require "Demo.mycor"
+require "Demo.EnemyHero"
+require "Demo.AIPlayer"
+
 
 BattleScene = class()
 function BattleScene:ctor()
@@ -34,6 +37,9 @@ end
 BattleLayer = class()
 function BattleLayer:ctor()
     self.bg = CCLayer:create()
+    self.aiPlayer = AIPlayer.new(self)
+    addChild(self.bg, self.aiPlayer.bg)
+
     local sp = CCSprite:create("bbg_cave_hall.jpg")
     local vs = getVS()
     setPos(addChild(self.bg, sp), {vs.width/2, vs.height/2})
@@ -59,7 +65,7 @@ function BattleLayer:ctor()
     setPos(addChild(self.bg, self.hero.bg), {88, vs.height/2})
     table.insert(self.myTeam, self.hero)
 
-    self.enemy = Hero.new(self, 1)
+    self.enemy = EnemyHero.new(self, 1)
     setPos(addChild(self.bg, self.enemy.bg), {vs.width-88, vs.height/2})
     table.insert(self.enemyTeam, self.enemy)
     
